@@ -23,7 +23,12 @@ class SqsQueueFactory implements FactoryInterface
      */
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        $sqsClient        = $container->get(Aws::class)->createSqs();
+        if ($container->has('Sqs\\Aws\\Sdk')) {
+            $sqsClient = $container->get('Sqs\\Aws\\Sdk')->createSqs();
+        } else {
+            $sqsClient = $container->get(Aws::class)->createSqs();
+        }
+
         $jobPluginManager = $container->get(JobPluginManager::class);
 
         // Let's see if we have options for this specific queue
